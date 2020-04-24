@@ -1,4 +1,26 @@
+
+sudo: required
 language: java
-cache:
-  directories:
-  - $HOME/.m2
+
+jdk:
+  - openjdk8
+
+script:
+  - mvn clean compile assembly:single
+
+before_deploy:
+    - mkdir MiningBuild
+    - find . -name '*.jar' -exec cp {} ./MiningBuild \;
+    - cd /home/travis/build/semantic-conflicts/jsoup/MiningBuild
+    - tar -zcvf result.tar.gz *
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: result.tar.gz
+  name: without-fetchjar-55190398
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    all_branches: true 
+            
